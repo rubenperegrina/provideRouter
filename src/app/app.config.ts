@@ -1,8 +1,21 @@
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { ApplicationConfig, inject } from '@angular/core';
+import { NavigationError, provideRouter, withDebugTracing, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withNavigationErrorHandler, withRouterConfig } from '@angular/router';
 
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes) ]
+  providers: [
+    provideRouter(routes,
+      withInMemoryScrolling({
+        scrollPositionRestoration: 'top',
+      }),
+      withEnabledBlockingInitialNavigation(),
+      withRouterConfig({
+        paramsInheritanceStrategy: 'always',
+        onSameUrlNavigation: 'reload'
+      }),
+      withDebugTracing(),
+      withNavigationErrorHandler((e: NavigationError) => inject(MyErrorTracker).trackError(e))
+    )
+  ]
 };
